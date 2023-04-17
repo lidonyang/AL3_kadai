@@ -9,16 +9,28 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
+#include"DebugCamera.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
 class GameScene {
+private:
+	float inputFloat3[3] = {0, 0, 0};
+	uint32_t textureHandle_ = 0;
+	Sprite* sprite_ = nullptr;
+	//モデル生成
+	Model* model_ = nullptr;
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
 
 public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
 	GameScene();
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
 
 	/// <summary>
 	/// デストラクタ
