@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "Input.h"
+
 class Player
 {
 public:
@@ -20,7 +22,13 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 private:
+	//ワ－ルド変換デ－タ
 	WorldTransform worldTransform_;
+	//モデル
 	Model* model_ = nullptr;
+	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+	//キー入力
+	Input* input_ = nullptr;
+
 };
