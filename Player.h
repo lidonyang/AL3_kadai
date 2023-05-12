@@ -3,6 +3,7 @@
 #include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
+#include<list>
 
 
 class Player
@@ -28,6 +29,7 @@ public:
     /// </summary>
 	void Attack();
 	
+	~Player();
 
 private:
 	//ワ－ルド変換デ－タ
@@ -41,5 +43,6 @@ private:
 	//弾
 	PlayerBullet* bullet_ = nullptr;
 
+	std::list<PlayerBullet*> bullets_;
 
 };

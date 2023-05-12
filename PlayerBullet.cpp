@@ -6,7 +6,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position)
 	assert(model); 
 	model_ = model;
 
-	textureHandle_ = TextureManager::Load("guagua.png");
+	textureHandle_ = TextureManager::Load("cube.jpg");
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_= position;
