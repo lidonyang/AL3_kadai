@@ -27,4 +27,5 @@ Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
 //アフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate);
 	
-
+//ベクトル変換
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
