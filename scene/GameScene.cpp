@@ -13,6 +13,7 @@ GameScene::~GameScene()
 	delete player_;
 	delete model_;
 	delete debugCamera_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -39,7 +40,12 @@ void GameScene::Initialize() {
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
-
+	// 敵の速度
+	const float kenemySpeed = 1.0f;
+	Vector3 velocity(0, 0, kenemySpeed);
+	//敵の生成
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_, {0, 0, 50}, velocity);
 }
 
 void GameScene::Update() 
@@ -69,7 +75,8 @@ void GameScene::Update()
 		//ビュープロジェクション行列の更新と転送
 		viewProjection_.UpdateMatrix();
 	}
-
+	//敵の更新
+	enemy_->Update();
 }
 
 void GameScene::Draw() {
@@ -101,6 +108,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 	player_->Draw(viewProjection_);
+	enemy_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

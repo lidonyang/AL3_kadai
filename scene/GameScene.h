@@ -11,6 +11,7 @@
 
 #include"Player.h"
 #include "DebugCamera.h"
+#include"Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -63,5 +64,6 @@ private: // メンバ変数
 	//デバッグカメラカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
-
+	//敵
+	Enemy* enemy_ = nullptr;
 };
