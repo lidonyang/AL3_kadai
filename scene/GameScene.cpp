@@ -41,8 +41,8 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵の速度
-	const float kenemySpeed = 1.0f;
-	Vector3 velocity(0, 0, kenemySpeed);
+	const float kenemySpeed = 0.5f;
+	Vector3 velocity(kenemySpeed, kenemySpeed, kenemySpeed);
 	//敵の生成
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, {0, 0, 50}, velocity);

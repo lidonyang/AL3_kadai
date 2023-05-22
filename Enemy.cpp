@@ -13,15 +13,47 @@ void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& vel
 	velocity_ = velocity;
 }
 
+void Enemy::UpdateApproach()
+{
+	worldTransform_.translation_.x -= velocity_.x;
+	worldTransform_.translation_.y += velocity_.y;
+	worldTransform_.translation_.z -= velocity_.z;
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::UpdateLeave()
+{
+	worldTransform_.translation_.x += velocity_.x;
+	worldTransform_.translation_.y -= velocity_.y;
+	worldTransform_.translation_.z += velocity_.z;
+	if (worldTransform_.translation_.z > 50.0f) {
+		phase_ = Phase::Approach;
+	}
+}
+
 void Enemy::Update()
 {
 	worldTransform_.UpdateMatrix();
-	worldTransform_.translation_.x -= velocity_.x;
-	worldTransform_.translation_.y -= velocity_.y;
-	worldTransform_.translation_.z -= velocity_.z;
+
+	switch (phase_) {
+	case Enemy::Phase::Approach:
+	default:
+		UpdateApproach();
+		
+		break;
+	case Enemy::Phase::Leave:
+		UpdateLeave();
+		
+		break;
+	
+	}
+
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
+
