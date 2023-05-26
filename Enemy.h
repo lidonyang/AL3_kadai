@@ -3,8 +3,10 @@
 #include "Vector3.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "EnemyBullet.h"
+#include<list>
 
-
+class Player;
 
 class Enemy {
 public:
@@ -23,6 +25,22 @@ public:
 		Leave,    // 離脱する
 	};
 
+	 /// <summary>
+	/// 攻撃
+	/// </summary>
+	void Fire();
+
+	~Enemy();
+
+	// 接近フェーズ初期化関数
+	void InitializeApproach();
+
+
+	//発射間隔
+	static const int kFireInterval = 60;
+
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_;
@@ -32,4 +50,15 @@ private:
 
 	//フェ－ズ
 	Phase phase_ = Phase::Approach;
+
+	// 弾
+	EnemyBullet* bullet_ = nullptr;
+
+	std::list<EnemyBullet*> bullets_;
+
+	//発射タイマー
+	int32_t fireTimer_ = 0;
+
+	//自キャラ
+	Player* player_ = nullptr;
 };

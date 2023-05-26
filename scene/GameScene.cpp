@@ -41,11 +41,14 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵の速度
-	const float kenemySpeed = 0.5f;
+	const float kenemySpeed = 0.2f;
 	Vector3 velocity(kenemySpeed, kenemySpeed, kenemySpeed);
 	//敵の生成
 	enemy_ = new Enemy();
-	enemy_->Initialize(model_, {0, 0, 50}, velocity);
+	enemy_->Initialize(model_, {15, 2, 50}, velocity);
+
+	//敵キャラに自キャラのアドレス渡す
+	enemy_->SetPlayer(player_);
 }
 
 void GameScene::Update() 
