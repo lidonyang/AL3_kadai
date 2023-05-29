@@ -31,6 +31,19 @@ public:
 	
 	~Player();
 
+	Vector3 GetWorldPosition();
+
+	// 衝突判定関数
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<PlayerBullet*>& GetBullets() { return bullets_; }
+
+	// 半径設定
+	const float GetRadius() { return radius_; }
+	const float radius_ = 1.0f;
+
+
 private:
 	//ワ－ルド変換デ－タ
 	WorldTransform worldTransform_;

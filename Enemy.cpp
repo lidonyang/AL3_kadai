@@ -1,6 +1,7 @@
 ﻿#include "Enemy.h"
 #include<assert.h>
-
+#include"Player.h"
+#include<cmath>
 
 Enemy::~Enemy() {
 	// buller_の解放
@@ -103,13 +104,39 @@ void Enemy::Draw(const ViewProjection& viewProjection)
 
 void Enemy::Fire() 
 {
+	assert(player_);
 
-		//弾の速度
-		const float kBullerSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBullerSpeed);
+	//弾の速度
+	const float kBullerSpeed = 1.0f;
+	// 自キャラの座標を取得
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵の座標を取得
+	Vector3 enemyPos = GetWorldPosition();
+	// 差分ベクトルを計算
+	Vector3 velocity; // = playerPos - enemyPos;
+	/*velocity.x = enemyPos.x - playerPos.x;
+	velocity.y = enemyPos.y - playerPos.y;
+	velocity.z = enemyPos.z - playerPos.z;*/
+	velocity.x = playerPos.x - enemyPos.x;
+	velocity.y = playerPos.y - enemyPos.y;
+	velocity.z = playerPos.z - enemyPos.z;
+	// ベクトルの正規化
+	float length = sqrtf((velocity.x * velocity.x) + (velocity.y * velocity.y) + (velocity.z * velocity.z));
+		
+	Vector3 Dir;
+	Dir.x = velocity.x / length;
+	Dir.y = velocity.y / length;
+	Dir.z = velocity.z / length;
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+	// ベクトルの長さを、速さに合わせる
+	velocity.x = Dir.x * kBullerSpeed;
+	velocity.y = Dir.y * kBullerSpeed;
+	velocity.z = Dir.z * kBullerSpeed;
+
+		//Vector3 velocity(0, 0, kBullerSpeed);
+
+		////速度ベクトルを自機の向きに合わせて回転させる
+		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
 		//弾を生成し、初期化
 	    EnemyBullet* newBullet = new EnemyBullet();
@@ -120,3 +147,15 @@ void Enemy::Fire()
 		bullets_.push_back(newBullet);
 		
 }
+Vector3 Enemy::GetWorldPosition() {
+	    // ワールド座標を入れる変数
+	    Vector3 worldPos;
+	    // ワールド行列の平行移動成分を取得
+	    worldPos.x = worldTransform_.translation_.x;
+	    worldPos.y = worldTransform_.translation_.y;
+	    worldPos.z = worldTransform_.translation_.z;
+
+	    return worldPos;
+}
+
+void Enemy::OnCollision() {}

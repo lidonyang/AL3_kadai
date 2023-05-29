@@ -41,6 +41,18 @@ public:
 
 	void SetPlayer(Player* player) { player_ = player; }
 
+	Vector3 GetWorldPosition();
+
+	//衝突判定関数
+	void OnCollision();
+
+	// 弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
+
+	//半径設定
+	const float GetRadius() { return radius_; }
+	const float radius_ = 1.0f;
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_;

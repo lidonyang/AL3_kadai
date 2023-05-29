@@ -15,6 +15,18 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	// 衝突判定関数
+	void OnCollision();
+
+	// 半径設定
+	const float GetRadius() { return radius_; }
+	const float radius_ = 1.0f;
+	// 半径
+	static const int kBadius = 1;
+
+
+	Vector3 GetWorldPosition();
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_;

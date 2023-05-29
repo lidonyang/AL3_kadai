@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵の速度
-	const float kenemySpeed = 0.2f;
+	const float kenemySpeed = 0.0f;
 	Vector3 velocity(kenemySpeed, kenemySpeed, kenemySpeed);
 	//敵の生成
 	enemy_ = new Enemy();
@@ -80,6 +80,9 @@ void GameScene::Update()
 	}
 	//敵の更新
 	enemy_->Update();
+
+	//当たり判定読み込む
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -129,6 +132,101 @@ void GameScene::Draw() {
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
+
+#pragma endregion
+}
+
+void GameScene::CheckAllCollisions()
+{
+	//判定対象AとBの座標
+	Vector3 posA, posB;
+
+	//自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+	#pragma region 自キャラと敵弾の当たり判定
+
+	// 自キャラの座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+
+		// 当たり判定
+		float dx = posB.x - posA.x;
+		float dy = posB.y - posA.y;
+		float dz = posB.z - posA.z;
+		float d = dx * dx + dy * dy + dz * dz;
+		
+		float r = (player_->GetRadius() + bullet->GetRadius()) *  (player_->GetRadius() + bullet->GetRadius());
+		// 球と球の交差判定
+		if (d <= r) {
+			player_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラの座標
+	posA = enemy_->GetWorldPosition();
+
+	// 自弾と敵全ての当たり判定
+	for (PlayerBullet* bullet : playerBullets) {
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+
+		// 当たり判定
+		float dx = posB.x - posA.x;
+		float dy = posB.y - posA.y;
+		float dz = posB.z - posA.z;
+		float d = dx * dx + dy * dy + dz * dz;
+
+		float r = (enemy_->GetRadius() + bullet->GetRadius()) *
+		          (enemy_->GetRadius() + bullet->GetRadius());
+		// 球と球の交差判定
+		if (d <= r) {
+			enemy_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	// 自弾と敵弾全ての当たり判定
+	for (PlayerBullet* bullet : playerBullets) 
+	{
+		//自弾の座標
+		posA = bullet->GetWorldPosition();
+		for (EnemyBullet* bullets : enemyBullets)
+		{
+			// 敵弾の座標
+			posB = bullets->GetWorldPosition();
+			// 当たり判定
+			float dx = posB.x - posA.x;
+			float dy = posB.y - posA.y;
+			float dz = posB.z - posA.z;
+			float d = dx * dx + dy * dy + dz * dz;
+
+			float r = (bullets->GetRadius() + bullet->GetRadius()) *
+			          (bullets->GetRadius() + bullet->GetRadius());
+			// 球と球の交差判定
+			if (d <= r) {
+				bullets->OnCollision();
+
+				bullet->OnCollision();
+			}
+		}
+
+	}
 
 #pragma endregion
 }
