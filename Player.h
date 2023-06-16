@@ -12,7 +12,7 @@ public:
 	///<summary>
 	///初期化
 	/// </summary>
-	void Initialize(Model*model,uint32_t textureHandle);
+	void Initialize(Model*model,uint32_t textureHandle,Vector3 position);
 
 	///< summary>
 	/// 更新
@@ -43,6 +43,8 @@ public:
 	const float GetRadius() { return radius_; }
 	const float radius_ = 1.0f;
 
+	//親となるワールドトランスフォームー
+	void SetParent(const WorldTransform* parent);
 
 private:
 	//ワ－ルド変換デ－タ

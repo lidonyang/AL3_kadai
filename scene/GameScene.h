@@ -12,6 +12,8 @@
 #include"Player.h"
 #include "DebugCamera.h"
 #include"Enemy.h"
+#include"Skydome.h"
+#include"RailCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -70,4 +72,10 @@ private: // メンバ変数
 	//衝突判定と応答
 	void CheckAllCollisions();
 
+	//3Dモデルの生成
+	Model* modelSkydome_ = nullptr;
+	Skydome* skydome_ = nullptr;
+
+	//レールカメラ
+	RailCamera* railCamera_ = nullptr;
 };

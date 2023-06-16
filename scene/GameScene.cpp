@@ -14,6 +14,8 @@ GameScene::~GameScene()
 	delete model_;
 	delete debugCamera_;
 	delete enemy_;
+	delete modelSkydome_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -28,9 +30,10 @@ void GameScene::Initialize() {
 	//worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
-	//playerの生成
+	// playerの生成
 	player_ = new Player();
-	player_->Initialize(model_,textureHandle_);
+	player_->Initialize(model_, textureHandle_, {0.f, -5.f, 15.f});
+
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -41,7 +44,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵の速度
-	const float kenemySpeed = 0.0f;
+	const float kenemySpeed = 0.2f;
 	Vector3 velocity(kenemySpeed, kenemySpeed, kenemySpeed);
 	//敵の生成
 	enemy_ = new Enemy();
@@ -49,12 +52,26 @@ void GameScene::Initialize() {
 
 	//敵キャラに自キャラのアドレス渡す
 	enemy_->SetPlayer(player_);
+
+	//3Dモデルの生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	skydome_ = new Skydome();
+	skydome_->Initialize(modelSkydome_);
+
+	//レールカメラの生成
+	railCamera_ = new RailCamera();
+	railCamera_->Initialize(viewProjection_.translation_,viewProjection_.rotation_);
+
+	//自キャラとレールカメラの親子関係
+	player_->SetParent(&railCamera_->GetWorldProjection());
 }
 
 void GameScene::Update() 
 {
 	//プレーヤーの更新
 	player_->Update(); 
+
+	 railCamera_->Update();
 
 	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACKSPACE)) {
@@ -73,16 +90,27 @@ void GameScene::Update()
 		//ビュープロジェクション行列転送
 		viewProjection_.TransferMatrix();
 	} 
-	else 
+	//else 
+	//{
+	//	//ビュープロジェクション行列の更新と転送
+	//	viewProjection_.UpdateMatrix();
+	//}
+	else if (!isDebugCameraActive_)
 	{
-		//ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
 	}
 	//敵の更新
 	enemy_->Update();
 
 	//当たり判定読み込む
 	CheckAllCollisions();
+
+	//モデルの更新
+	skydome_->Update();
+
+	
 }
 
 void GameScene::Draw() {
@@ -115,6 +143,7 @@ void GameScene::Draw() {
 
 	player_->Draw(viewProjection_);
 	enemy_->Draw(viewProjection_);
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

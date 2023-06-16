@@ -21,8 +21,6 @@ public:
 	// 半径設定
 	const float GetRadius() { return radius_; }
 	const float radius_ = 1.0f;
-	// 半径
-	static const int kBadius = 1;
 
 
 	Vector3 GetWorldPosition();
