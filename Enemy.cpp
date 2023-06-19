@@ -2,12 +2,13 @@
 #include<assert.h>
 #include"Player.h"
 #include<cmath>
+#include"GameScene.h"
 
 Enemy::~Enemy() {
 	// buller_の解放
-	for (EnemyBullet* bullet : bullets_) {
+	/*for (EnemyBullet* bullet : bullets_) {
 		delete bullet;
-	}
+	}*/
 }
 
 void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
@@ -60,14 +61,14 @@ void Enemy::UpdateLeave()
 
 void Enemy::Update()
 {
-	// デスフラグの立った弾の削除
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	//// デスフラグの立った弾の削除
+	//bullets_.remove_if([](EnemyBullet* bullet) {
+	//	if (bullet->IsDead()) {
+	//		delete bullet;
+	//		return true;
+	//	}
+	//	return false;
+	//});
 
 	worldTransform_.UpdateMatrix();
 
@@ -83,23 +84,28 @@ void Enemy::Update()
 		break;
 	
 	}
-
+	
+	/*if (--deathTimer_ <= 0)
+	{
+		isDead_ = true;
+	}*/
 
 	//弾の更新
-	for (EnemyBullet* bullet : bullets_) {
+	/*for (EnemyBullet* bullet : bullets_) {
 		bullet->Update();
-	}
+	}*/
 
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) 
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	
 
-	//弾の描画
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
+	////弾の描画
+	//for (EnemyBullet* bullet : bullets_) {
+	//	bullet->Draw(viewProjection);
+	//}
 }
 
 void Enemy::Fire() 
@@ -144,7 +150,8 @@ void Enemy::Fire()
 
 		//弾を登録する
 		//bullet_ = newBullet;
-		bullets_.push_back(newBullet);
+		//bullets_.push_back(newBullet);
+	    gameScene_->AddEnemyBullet(newBullet);
 		
 }
 Vector3 Enemy::GetWorldPosition() {

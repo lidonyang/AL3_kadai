@@ -6,7 +6,9 @@
 #include "EnemyBullet.h"
 #include<list>
 
+
 class Player;
+class GameScene;
 
 class Enemy {
 public:
@@ -40,6 +42,7 @@ public:
 	static const int kFireInterval = 60;
 
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 	Vector3 GetWorldPosition();
 
@@ -47,11 +50,14 @@ public:
 	void OnCollision();
 
 	// 弾リストを取得
-	const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
+	//const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
 
 	//半径設定
 	const float GetRadius() { return radius_; }
 	const float radius_ = 1.0f;
+
+	bool GetIsDead() { return isDead_; }
+	
 
 private:
 	WorldTransform worldTransform_;
@@ -66,11 +72,16 @@ private:
 	// 弾
 	EnemyBullet* bullet_ = nullptr;
 
-	std::list<EnemyBullet*> bullets_;
+	//std::list<EnemyBullet*> bullets_;
 
 	//発射タイマー
 	int32_t fireTimer_ = 0;
 
 	//自キャラ
 	Player* player_ = nullptr;
+
+	GameScene* gameScene_ = nullptr;
+
+	bool isDead_ = false;
+	uint32_t deathTimer_ = 300;
 };
