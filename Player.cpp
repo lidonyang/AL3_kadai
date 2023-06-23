@@ -1,4 +1,5 @@
 ﻿#include"Player.h"
+#include"Vector3.h"
 #include<cassert>
 
 #include "ImGuiManager.h"
@@ -9,6 +10,7 @@ Player::~Player()
 	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
+	delete sprite2DReticle_;
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 position) { 
@@ -25,9 +27,17 @@ void Player::Initialize(Model* model, uint32_t textureHandle, Vector3 position) 
 
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
+
+	worldTransform3DReticle_.Initialize();
+
+	model2_ = model;
+
+	// レティクルスプライト
+	uint32_t textureReticle = TextureManager::Load("target.png");
+	sprite2DReticle_ = Sprite::Create(textureReticle, {640, 360}, {1, 1, 1, 1}, {0.5, 0.5});
 }
 
-void Player::Update() {
+void Player::Update(ViewProjection& viewProjection) {
 
 	//デスフラグの立った弾の削除
 	bullets_.remove_if([](PlayerBullet * bullet) {
@@ -90,6 +100,7 @@ void Player::Update() {
 	worldTransform_.translation_.x += move.x;
 	worldTransform_.translation_.y += move.y;
 	worldTransform_.translation_.z += move.z;
+	
 
 	// 行列更新
 	worldTransform_.matWorld_ = MakeAffineMatrix(
@@ -108,6 +119,31 @@ void Player::Update() {
 	ImGui::SliderFloat3("position", sliderValue, 20.0f, 20.0f);
 	worldTransform_.translation_ = {sliderValue[0], sliderValue[1], sliderValue[2]};
 	ImGui::End();
+
+	//自機のワールド座標から３Dレティクルのワールド座標を計算
+	const float kDistancePlayerTo3DReticle = 50.0f;
+	Vector3 offset={0, 0, 1.0f};
+
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
+	offset = Normalize(offset) * kDistancePlayerTo3DReticle;
+
+	worldTransform3DReticle_.translation_.x = GetWorldPosition().x + offset.x;
+	worldTransform3DReticle_.translation_.y = GetWorldPosition().y + offset.y;
+	worldTransform3DReticle_.translation_.z = GetWorldPosition().z + offset.z;
+	
+	//ワールド行列更新と転送
+	worldTransform3DReticle_.UpdateMatrix();
+
+	//３Dから2Dレティクルのスクリーン座標を計算
+	Vector3 positionReticle = worldTransform3DReticle_.translation_;
+
+	Matrix4x4 matViewport =
+	 MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1); 
+	Matrix4x4 matViewProjectionViewport =
+	    viewProjection.matView * viewProjection.matProjection * matViewport;
+
+	positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 }
 
 
@@ -126,7 +162,7 @@ void Player::Draw(ViewProjection& viewProjection)
 		bullet->Draw(viewProjection);
 	}
 
-
+	model2_->Draw(worldTransform3DReticle_, viewProjection, textureHandle_);
 }
 
 void Player::Attack() 
@@ -175,4 +211,9 @@ void Player::SetParent(const WorldTransform* parent)
 {
 	worldTransform_.parent_ = parent;
 
+}
+
+void Player::DrawUI() 
+{ 
+	sprite2DReticle_->Draw();
 }

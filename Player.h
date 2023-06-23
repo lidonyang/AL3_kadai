@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "PlayerBullet.h"
 #include<list>
+#include "Sprite.h"
 
 
 class Player
@@ -17,7 +18,7 @@ public:
 	///< summary>
 	/// 更新
 	///  </summary>
-	void Update();
+	void Update(ViewProjection& viewProjection);
 
 	///< summary>
 	/// 描画
@@ -46,9 +47,14 @@ public:
 	//親となるワールドトランスフォームー
 	void SetParent(const WorldTransform* parent);
 
+	//UI描画
+	void DrawUI();
+
 private:
 	//ワ－ルド変換デ－タ
 	WorldTransform worldTransform_;
+	////ビュー
+	//ViewProjection viewprojection_;
 	//モデル
 	Model* model_ = nullptr;
 	//テクスチャハンドル
@@ -59,5 +65,11 @@ private:
 	PlayerBullet* bullet_ = nullptr;
 
 	std::list<PlayerBullet*> bullets_;
+
+	WorldTransform worldTransform3DReticle_;
+
+	Model* model2_ = nullptr;
+	//2Dレティクルスプライト
+	Sprite *sprite2DReticle_ = nullptr;
 
 };

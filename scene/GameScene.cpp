@@ -78,12 +78,15 @@ void GameScene::Initialize() {
 
 	//敵発生データを読み込み
 	LoadEnemyPopDate();
+
+	TextureManager::Load("target.png");
+
 }
 
 void GameScene::Update() 
 {
 	//プレーヤーの更新
-	player_->Update(); 
+	player_->Update(viewProjection_); 
 
 	// デスフラグの立った弾の削除
 	bullets_.remove_if([](EnemyBullet* bullet) {
@@ -185,19 +188,19 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 	player_->Draw(viewProjection_);
-
-	for (Enemy* enemy : enemy_)
-	{
+	for (Enemy* enemy : enemy_) {
 		enemy->Draw(viewProjection_);
 		// enemy_->Draw(viewProjection_);
 	}
-	
+
 	skydome_->Draw(viewProjection_);
 
-	//弾の描画
-	 for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection_);
-	 }
+	// 弾の描画
+	for (EnemyBullet* bullet : bullets_) {
+	     bullet->Draw(viewProjection_);
+	}
+	
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -211,7 +214,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	 
-	
+	player_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

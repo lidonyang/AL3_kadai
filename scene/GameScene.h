@@ -99,4 +99,5 @@ private: // メンバ変数
 	bool isflag = false;
 	//待機タイマー
 	uint32_t istime = 60;
+	
 };
