@@ -50,6 +50,7 @@ public:
 	//UI描画
 	void DrawUI();
 
+
 private:
 	//ワ－ルド変換デ－タ
 	WorldTransform worldTransform_;

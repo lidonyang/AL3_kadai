@@ -40,4 +40,9 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 
 // 座標変換
 Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
-	
+
+    // マイナスオーバーロード
+Vector3& operator-=(Vector3& m1, const Vector3& m2);
+
+// マイナス2公演算子オーバーロード
+Vector3 operator-(const Vector3& m1, const Vector3& m2);

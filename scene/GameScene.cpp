@@ -188,6 +188,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 	player_->Draw(viewProjection_);
+
 	for (Enemy* enemy : enemy_) {
 		enemy->Draw(viewProjection_);
 		// enemy_->Draw(viewProjection_);
