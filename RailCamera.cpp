@@ -21,7 +21,7 @@ void RailCamera::Update()
 	worldTransform_.translation_.z += move.z;
 
 	worldTransform_.rotation_.x += rot.x;
-	worldTransform_.rotation_.y = rot.y;
+	worldTransform_.rotation_.y += rot.y;
 	worldTransform_.rotation_.z += rot.z;
 
 	worldTransform_.UpdateMatrix();
