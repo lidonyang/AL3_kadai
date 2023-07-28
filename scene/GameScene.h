@@ -100,5 +100,9 @@ private: // メンバ変数
 	bool isflag = false;
 	//待機タイマー
 	uint32_t istime = 60;
-	
+
+	//プレーヤの命
+	uint32_t wintextureHandle = 0;
+	Sprite* winsprite_ = nullptr;
+
 };

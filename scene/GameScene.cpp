@@ -24,6 +24,7 @@ GameScene::~GameScene()
 	for (EnemyBullet* bullet : bullets_) {
 	    delete bullet;
 	}
+	delete winsprite_;
 }
 
 void GameScene::Initialize() {
@@ -80,6 +81,9 @@ void GameScene::Initialize() {
 	LoadEnemyPopDate();
 
 	TextureManager::Load("target.png");
+
+	wintextureHandle = TextureManager::Load("flag.png");
+	winsprite_ = Sprite::Create(wintextureHandle, {100, 50});
 
 }
 
@@ -216,6 +220,10 @@ void GameScene::Draw() {
 	/// </summary>
 	 
 	player_->DrawUI();
+	//winsprite_->Draw();
+
+	
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
