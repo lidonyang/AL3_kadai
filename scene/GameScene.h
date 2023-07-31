@@ -100,5 +100,22 @@ private: // メンバ変数
 	bool isflag = false;
 	//待機タイマー
 	uint32_t istime = 60;
-	
+
+	//プレーヤの命
+	uint32_t wintextureHandle = 0;
+	Sprite* winsprite_ = nullptr;
+	Sprite* win1sprite_ = nullptr;
+	Sprite* win2sprite_ = nullptr;
+	float playerflag_ = 3.0f;
+	float enemyflag = 5.0f;
+
+	//シーン
+	float scene = 0.0f;
+	uint32_t starttextureHandle = 0;
+	Sprite* startsprite_ = nullptr;
+	uint32_t gamewintextureHandle = 0;
+	Sprite* gamewinsprite_ = nullptr;
+	uint32_t gameovertextureHandle = 0;
+	Sprite* gameoversprite_ = nullptr;
+
 };

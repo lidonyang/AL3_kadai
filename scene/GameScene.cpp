@@ -24,6 +24,7 @@ GameScene::~GameScene()
 	for (EnemyBullet* bullet : bullets_) {
 	    delete bullet;
 	}
+	delete winsprite_;
 }
 
 void GameScene::Initialize() {
@@ -81,82 +82,110 @@ void GameScene::Initialize() {
 
 	TextureManager::Load("target.png");
 
+	wintextureHandle = TextureManager::Load("flag.png");
+	winsprite_ = Sprite::Create(wintextureHandle, {40, 30});
+	win1sprite_ = Sprite::Create(wintextureHandle, {80, 30});
+	win2sprite_ = Sprite::Create(wintextureHandle, {120, 30});
+
+	starttextureHandle = TextureManager::Load("Title.png");
+	startsprite_ = Sprite::Create(starttextureHandle, {0, 0});
+	gamewintextureHandle = TextureManager::Load("Win.png");
+	gamewinsprite_ = Sprite::Create(gamewintextureHandle, {0, 0});
+	gameovertextureHandle = TextureManager::Load("Lost.png");
+	gameoversprite_ = Sprite::Create(gameovertextureHandle, {0, 0});
 }
 
 void GameScene::Update() 
 {
-	//プレーヤーの更新
-	player_->Update(viewProjection_); 
-
-	// デスフラグの立った弾の削除
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
+	if (scene == 0)
+	{
+		if (input_->TriggerKey(DIK_RETURN))
+		{
+			scene = 1;
 		}
-		return false;
-	});
-	// 弾の更新
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Update();
 	}
+	else if (scene == 1)
+	{
+		// プレーヤーの更新
+		player_->Update(viewProjection_);
 
-	 railCamera_->Update();
+		// デスフラグの立った弾の削除
+		bullets_.remove_if([](EnemyBullet* bullet) {
+			if (bullet->IsDead()) {
+				delete bullet;
+				return true;
+			}
+			return false;
+		});
+		// 弾の更新
+		for (EnemyBullet* bullet : bullets_) {
+			bullet->Update();
+		}
 
-	#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_BACKSPACE)) {
-		// デバッグカメラ有効フラグをトグル
-		isDebugCameraActive_ = true;
-	}
+		railCamera_->Update();
+
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_BACKSPACE)) {
+			// デバッグカメラ有効フラグをトグル
+			isDebugCameraActive_ = true;
+		}
 #endif
-	// カメラの処理
-	if (isDebugCameraActive_) 
-	{
-		// デバッグカメラの更新
-		debugCamera_->Update();
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			// デバッグカメラの更新
+			debugCamera_->Update();
 
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		//ビュープロジェクション行列転送
-		viewProjection_.TransferMatrix();
-	} 
-	
-	else if (!isDebugCameraActive_)
-	{
-		// else
-		//{
-		//	//ビュープロジェクション行列の更新と転送
-		//	viewProjection_.UpdateMatrix();
-		//}
-		viewProjection_.matView = railCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	}
-
-	//デスフラグの立った敵の削除
-	enemy_.remove_if([](Enemy * enemy){
-		if (enemy->GetIsDead()) {
-			delete enemy;
-			return true;
+			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+			// ビュープロジェクション行列転送
+			viewProjection_.TransferMatrix();
 		}
-		return false;
-	});
 
-	for (Enemy* enemy : enemy_)
-	{
-		enemy->Update();
-		// 敵の更新
-		// enemy_->Update();
+		else if (!isDebugCameraActive_) {
+			// else
+			//{
+			//	//ビュープロジェクション行列の更新と転送
+			//	viewProjection_.UpdateMatrix();
+			//}
+			viewProjection_.matView = railCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+			viewProjection_.TransferMatrix();
+		}
+
+		// デスフラグの立った敵の削除
+		enemy_.remove_if([](Enemy* enemy) {
+			if (enemy->GetIsDead()) {
+				delete enemy;
+				return true;
+			}
+			return false;
+		});
+
+		for (Enemy* enemy : enemy_) {
+			enemy->Update();
+			// 敵の更新
+			// enemy_->Update();
+		}
+
+		// 当たり判定読み込む
+		CheckAllCollisions();
+
+		// モデルの更新
+		skydome_->Update();
+
+		// 敵発生コマンド更新
+		UpdateEnemyPopCommands();
+
+		if (playerflag_ == 0)
+		{
+			scene = 3;
+		}
+		if (enemyflag == 0)
+		{
+			scene = 2;
+		}
 	}
-
-	//当たり判定読み込む
-	CheckAllCollisions();
-
-	//モデルの更新
-	skydome_->Update();
-
-	//敵発生コマンド更新
-	UpdateEnemyPopCommands();
+	
 }
 
 void GameScene::Draw() {
@@ -187,19 +216,27 @@ void GameScene::Draw() {
 	/// </summary>
 	//model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
-	player_->Draw(viewProjection_);
+	if (scene == 0)
+	{
 
-	for (Enemy* enemy : enemy_) {
-		enemy->Draw(viewProjection_);
-		// enemy_->Draw(viewProjection_);
 	}
+	else if (scene == 1)
+	{
+		player_->Draw(viewProjection_);
 
-	skydome_->Draw(viewProjection_);
+		for (Enemy* enemy : enemy_) {
+			enemy->Draw(viewProjection_);
+			// enemy_->Draw(viewProjection_);
+		}
 
-	// 弾の描画
-	for (EnemyBullet* bullet : bullets_) {
-	     bullet->Draw(viewProjection_);
+		skydome_->Draw(viewProjection_);
+
+		// 弾の描画
+		for (EnemyBullet* bullet : bullets_) {
+			bullet->Draw(viewProjection_);
+		}
 	}
+	
 	
 	
 
@@ -215,7 +252,33 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	 
-	player_->DrawUI();
+	if (scene == 0)
+	{
+		 startsprite_->Draw();
+	}
+	else if (scene == 1)
+	{
+		 player_->DrawUI();
+		 if (playerflag_ == 3) {
+			 winsprite_->Draw();
+			 win1sprite_->Draw();
+			 win2sprite_->Draw();
+		 }
+		 if (playerflag_ == 2) {
+			 winsprite_->Draw();
+			 win1sprite_->Draw();
+		 }
+		 if (playerflag_ == 1) {
+			 winsprite_->Draw();
+		 }
+	}
+	else if (scene == 2)
+	{
+		 gamewinsprite_->Draw();
+	}
+	else if (scene == 3) {
+		 gameoversprite_->Draw();
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -254,7 +317,7 @@ void GameScene::CheckAllCollisions()
 		// 球と球の交差判定
 		if (d <= r) {
 			player_->OnCollision();
-
+			playerflag_ -= 1.0f;
 			bullet->OnCollision();
 		}
 	}
@@ -284,7 +347,7 @@ void GameScene::CheckAllCollisions()
 			// 球と球の交差判定
 			if (d <= r) {
 				enemy->OnCollision();
-
+				enemyflag -= 1.0f;
 				bullet->OnCollision();
 			}
 		}

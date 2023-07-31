@@ -121,18 +121,18 @@ void Player::Update(ViewProjection& viewProjection) {
 	ImGui::End();
 
 	//自機のワールド座標から３Dレティクルのワールド座標を計算
-	//const float kDistancePlayerTo3DReticle = 50.0f;
-	//Vector3 offset={0, 0, 1.0f};
+	const float kDistancePlayerTo3DReticle = 50.0f;
+	Vector3 offset={0, 0, 1.0f};
 
-	//offset = TransformNormal(offset, worldTransform_.matWorld_);
-	//offset = Normalize(offset) * kDistancePlayerTo3DReticle;
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
+	offset = Normalize(offset) * kDistancePlayerTo3DReticle;
 
-	//worldTransform3DReticle_.translation_.x = GetWorldPosition().x + offset.x;
-	//worldTransform3DReticle_.translation_.y = GetWorldPosition().y + offset.y;
-	//worldTransform3DReticle_.translation_.z = GetWorldPosition().z + offset.z;
-	//
-	////ワールド行列更新と転送
-	//worldTransform3DReticle_.UpdateMatrix();
+	worldTransform3DReticle_.translation_.x = GetWorldPosition().x + offset.x;
+	worldTransform3DReticle_.translation_.y = GetWorldPosition().y + offset.y;
+	worldTransform3DReticle_.translation_.z = GetWorldPosition().z + offset.z;
+	
+	//ワールド行列更新と転送
+	worldTransform3DReticle_.UpdateMatrix();
 
 	// マウス座標を取得する
 	POINT mousePosition;
@@ -142,15 +142,15 @@ void Player::Update(ViewProjection& viewProjection) {
 	ScreenToClient(hwnd, &mousePosition);
 
 	//３Dから2Dレティクルのスクリーン座標を計算
-	//Vector3 positionReticle = worldTransform3DReticle_.translation_;
+	Vector3 positionReticle = worldTransform3DReticle_.translation_;
 
 	Matrix4x4 matViewport =
 	 MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1); 
-	/*Matrix4x4 matViewProjectionViewport =
+	Matrix4x4 matViewProjectionViewport =
 	    viewProjection.matView * viewProjection.matProjection * matViewport;
 
-	positionReticle = Transform(positionReticle, matViewProjectionViewport);*/
-	/*sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));*/
+	positionReticle = Transform(positionReticle, matViewProjectionViewport);
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 	sprite2DReticle_->SetPosition(Vector2(float(mousePosition.x),float(mousePosition.y)));
 
 	//ビュープロジェクトション合成
@@ -171,7 +171,7 @@ void Player::Update(ViewProjection& viewProjection) {
 
 	mouseDirection = Normalize(mouseDirection);
 	//カメラからオブジェクトの距離
-	const float kDistanceTestobject = 100.0f;
+	const float kDistanceTestobject = 150.0f;
 	worldTransform3DReticle_.translation_.x = posNear.x + mouseDirection.x * kDistanceTestobject;
 	worldTransform3DReticle_.translation_.y = posNear.y + mouseDirection.y * kDistanceTestobject;
 	worldTransform3DReticle_.translation_.z = posNear.z + mouseDirection.z * kDistanceTestobject;

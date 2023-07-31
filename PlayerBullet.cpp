@@ -5,7 +5,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	assert(model); 
 	model_ = model;
 
-	textureHandle_ = TextureManager::Load("cube.jpg");
+	textureHandle_ = TextureManager::Load("cube.png");
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_= position;
